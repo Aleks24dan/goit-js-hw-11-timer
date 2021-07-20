@@ -1,4 +1,5 @@
 import "../sass/index.scss";
+import Swal from 'sweetalert2';
 // // import template from "./template.js";
 
 
@@ -73,17 +74,26 @@ import "../sass/index.scss";
 
 
 class CountdownTimer {
-    constructor({ selector, targetDate}) {        
-        this.selector = selector;
-        this.targetDate = targetDate;
+    constructor() {
         this.refs = {
             days: document.querySelector('[data-value="days"]'),
             hours: document.querySelector('[data-value="hours"]'),
             mins: document.querySelector('[data-value="mins"]'),
             secs: document.querySelector('[data-value="secs"]'),
+            
+            start: document.querySelector('button'),
         };
+        this.intervalId = null;
+        
+        this.refs.start.addEventListener("click", this.onStart);
+        this.inputDate = '';
+        this.targetDate = new Date(inputDate);
+        console.log(this.targetDate)
+    }
 
-        setInterval(() => {
+    
+    onStart(){
+        this.intervalId = setInterval(() => {
             const startDate = Date.now();
             const time = this.targetDate - startDate;
             console.log(time)
@@ -91,12 +101,14 @@ class CountdownTimer {
                 const { days, hours, mins, secs } = this.getTimeComponents(time);
                 this.updateClockface({ days, hours, mins, secs });
             } else {
-                clearInterval();
-                document.getElementById("timer-1").innerHTML = "EXPIRED!";
-            }            
+                clearInterval(this.intervalId);
+                Swal.fire({
+                    text: "Please choose a date in the future",
+                    icon: 'error',
+                });
+            }
         }, 1000);
     }
-
     getTimeComponents(time) {
     const days =  this.pad(Math.floor(time / (1000 * 60 * 60 * 24)));
     const hours = this.pad(Math.floor((time % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)));
@@ -117,9 +129,11 @@ class CountdownTimer {
     this.refs.secs.textContent = `${secs}`; 
 }
 };
-
-
-new CountdownTimer({
-    selector: '#timer-1',
-    targetDate: new Date('Jul 15, 2021'),    
-});
+const inputDate = '';
+const input = document.querySelector("input");
+input.addEventListener("input",onInputDate);
+function onInputDate(event) {
+    inputDate = event.currentTarget.value;
+}
+ console.log(new Date("12.12.2021"))
+new CountdownTimer({targetDate: new Date("12.12.2021")});
